@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 
 function ChannelStatBar(props){
     return (
-        <Grid container spacing={3} sx={{width:'100'}}>
+        <Grid container spacing={3} sx={{width:'100%', display: 'flex', flexWrap: 'wrap'}}>
             <Grid item xs={12}>
                 <Card variant="outlined" sx={{ display: 'flex', alignItems: 'center', background: '#c20101'}}>
                     <CardContent>

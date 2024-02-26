@@ -1,29 +1,60 @@
 
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, Container } from '@mui/material'
 import SearchBar from './SearchBar';
 import ChannelStatBar from './ChannelStatBar';
 import ChannelBody from './ChannelBody';
+// import ChannelTable from './ChannelTable';
 import youtube from '../api/youtube';
+import { TailSpin } from 'react-loader-spinner';
+import Box from '@mui/material/Box';
+import PaginationComponent from '../utils/pagination';
 
+function renderResult(channelData, search, batch, page, pageCount, handlePageChange){
 
-
-function renderResult(props){
-    const search = props.search;
-    if (search){
+    if (search === 'Loaded'){
         return (
-            <>
+            <>  
+                <Box sx={{ display: 'flex', justifyContent: 'center', margin: '20px' }}>
+                    <PaginationComponent batch={batch} page={page} pageCount={pageCount} handlePageChange={handlePageChange} />
+                </Box>
+                
                 <ChannelStatBar 
-                    channel_id={props.id}
-                    title={props.title}
-                    thumbnail={props.thumbnail}
-                    viewCount={props.viewCount}
-                    subscriberCount={props.subscriberCount}
-                    videoCount={props.videoCount}
+                    channel_id={channelData[page-1].channel.id}
+                    title={channelData[page-1].channel.title}
+                    thumbnail={channelData[page-1].channel.thumbnail}
+                    viewCount={channelData[page-1].channel.viewCount}
+                    subscriberCount={channelData[page-1].channel.subscriberCount}
+                    videoCount={channelData[page-1].channel.videoCount}
                 />
                 <ChannelBody
-                    plotData={props.plotData}
+                    plotData={channelData[page-1].plotData}
                 />
+
+                {/* <ChannelTable 
+                    plotData={props.plotData}
+                /> */}
+
+            </>
+            
+        )
+    }
+    else if (search === 'Loading'){
+        return(
+            <>
+                <br></br>
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                    <TailSpin
+                        visible={true}
+                        height="80"
+                        width="80"
+                        color="#c20101"
+                        ariaLabel="tail-spin-loading"
+                        radius="1"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                    />
+                </Box>
             </>
             
         )
@@ -35,38 +66,53 @@ function renderResult(props){
     }
 }
 
-class Body extends Component {
+function Body() {
 
-    state = {
-        data: [],
-        id: '',
-        title: '',
-        thumbnail: '',
-        viewCount: '',
-        subscriberCount: '',
-        videoCount: '',
-        playlists: [],
-        plotData: [],
-        search: false
-    }
-    handleSubmit = async (term) => {
+    const [search, setSearch] = useState('Not Loaded');
+    const [batch, setBatch] = useState(false);
+    const [page, setPage] = useState(1);
+    const [pageCount, setPageCount] = useState(1);
+    const [channels, setChannels] = useState('');
+    const [channelData, setChannelData] = useState({});
+
+
+
+
+
+
+    
+    const handlePageChange = async (event, value) => {
+        await setSearch('Loading');
+        const newPage = value;
+        await setPage(newPage);
+    };
+
+    const loadStats = async () => {
+        
+        await setSearch('Loading');
+        
+        var term = channels[page-1];
+
+        console.log(page);
+        console.log(term)
+    
+        if (channelData[page-1] !== undefined){
+            console.log('Data already loaded');
+            await setSearch('Loaded');
+            return;
+        }
+
         const response_channel = await youtube.get('/channels', {
             params: {
                 forHandle: term,
                 part: 'snippet,statistics',
             }
         });
-        this.setState({ data: response_channel.data.items });
-        this.setState({ id: response_channel.data.items[0].id });
-        this.setState({ title: response_channel.data.items[0].snippet.title });
-        this.setState({ thumbnail: response_channel.data.items[0].snippet.thumbnails.default.url });
-        this.setState({ viewCount: response_channel.data.items[0].statistics.viewCount });
-        this.setState({ subscriberCount: response_channel.data.items[0].statistics.subscriberCount });
-        this.setState({ videoCount: response_channel.data.items[0].statistics.videoCount });
+
 
         var response_playlists = await youtube.get('/playlists', {
             params: {
-                channelId: this.state.id,
+                channelId: response_channel.data.items[0].id,
                 part: 'snippet,contentDetails',
                 maxResults: 10
             }
@@ -112,38 +158,77 @@ class Body extends Component {
                 likes: parseInt(response_video.data.items[0].statistics.likeCount),
                 comments: parseInt(response_video.data.items[0].statistics.commentCount)
             });
+        };
+
+        channelData[page-1] = playlists;
+        channelData[page-1].plotData = plotData;
+        channelData[page-1].channel = {};
+        channelData[page-1].channel.id = response_channel.data.items[0].id;
+        channelData[page-1].channel.title = response_channel.data.items[0].snippet.title;
+        channelData[page-1].channel.thumbnail = response_channel.data.items[0].snippet.thumbnails.default.url;
+        channelData[page-1].channel.viewCount = response_channel.data.items[0].statistics.viewCount;
+        channelData[page-1].channel.subscriberCount = response_channel.data.items[0].statistics.subscriberCount;
+        channelData[page-1].channel.videoCount = response_channel.data.items[0].statistics.videoCount;
+
+
+        await setChannelData(channelData);
+
+        await setSearch('Loaded');
+
+        console.log(channelData);
+
+    }
+
+    useEffect(() => {
+        console.log(page)
+        if (channels !== ''){
+            loadStats();
         }
-
-        this.setState({ playlists: playlists });
-        this.setState({ plotData: plotData });
-        this.setState({ search: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[channels, page]);
 
 
+    const handleSubmit = async (term) => {
+
+        await setSearch('Loading');
+
+        await setChannelData({});
+        await setPage(1);
+        
+        var channels = term.split(',');
+
+        await setPageCount(channels.length);
+        if (channels.length > 1){
+            await setBatch({ batch: true });
+        }
+        await setChannels(channels);
+
+        
+        // await loadStats(page);   
     }
 
-    render () {
-        return (
-            <main style={{ height: "100vh"}}>
-                <Container>
-                    <br></br>
-                    <Typography variant="h2" align="center" color="textPrimary" gutterBottom>
-                        TUBE INSIGHTS
-                    </Typography>
-                    <Typography variant="h5" align="center" color="#c20101" paragraph>
-                        Streamline Your Insights: Aggregating YouTube Data with Precision and Ease
-                    </Typography>
-                    <br></br>
-                    <SearchBar alignItems="center" placeholder="Enter YouTube username or channel link" searchBarWidth="60%"  handleSubmit={this.handleSubmit}/>
-                </Container>
+    return (
+        <main style={{ height: "100vh"}}>
+            <Container>
+                <br></br>
+                <Typography variant="h2" align="center" color="textPrimary" gutterBottom>
+                    TUBE INSIGHTS
+                </Typography>
+                <Typography variant="h5" align="center" color="#c20101" paragraph>
+                    Streamline Your Insights: Aggregating YouTube Data with Precision and Ease
+                </Typography>
+                <br></br>
+                <SearchBar alignItems="center" placeholder="Enter YouTube username or channel link" searchBarWidth="60%"  handleSubmit={handleSubmit}/>
+            </Container>
 
-                <br></br>
-                <Container>
-                    {renderResult(this.state)}
-                </Container>
-                <br></br>
-            </main>
-        )
-    }
+            <br></br>
+            <Container maxWidth="false">
+                {/* {renderResult(id, title, thumbnail, viewCount, subscriberCount, videoCount, search, batch, page, pageCount, plotData, handlePageChange)} */}
+                {renderResult(channelData, search, batch, page, pageCount, handlePageChange)}
+            </Container>
+            <br></br>
+        </main>
+    )
 }
 
 export default Body;

@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 class SearchBar extends React.Component {
     
     state = {
-        term: ''
+        term: '',
     }
 
     props = {

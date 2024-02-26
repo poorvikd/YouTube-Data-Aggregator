@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label } fr
 export default function Barplot(props){
     return (
         <BarChart
-            width={500}
+            width={400}
             height={300}
             data={props.plotData}
             margin={{

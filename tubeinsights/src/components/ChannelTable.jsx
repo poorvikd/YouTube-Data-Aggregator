@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Barplot from './Barplot';
 
 
-function ChannelBody(props){
+function ChannelTable(props){
     return (
         <>
             <Box sx={{ width: '100%' , display: 'flex', justifyContent: 'center', marginTop: '20px', flexWrap: 'wrap'}}>
@@ -34,4 +34,4 @@ function ChannelBody(props){
     );
 }
 
-export default ChannelBody;
+export default ChannelTable;
