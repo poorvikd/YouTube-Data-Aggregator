@@ -8,4 +8,5 @@ export default axios.create({
     params: {
         key: KEY,
     }
-  });
+});
+
