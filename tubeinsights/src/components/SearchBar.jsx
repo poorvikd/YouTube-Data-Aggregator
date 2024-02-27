@@ -1,3 +1,4 @@
+// Desc: This file contains the SearchBar component which is used to render the search bar in the application. It takes the handleSubmit function as props and renders the search bar.
 import React from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import Input from '@mui/material/Input';

@@ -1,3 +1,5 @@
+// Desc: This file contains the EnhancedTable component which is used to display the table of videos. It takes the rows as props and renders the table using the Table component from the Material-UI library.
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";

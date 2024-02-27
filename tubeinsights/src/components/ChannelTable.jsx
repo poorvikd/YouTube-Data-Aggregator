@@ -1,3 +1,4 @@
+// Desc: This file contains the ChannelTable component which is used to display the table of videos for a chosen playlist of the channel. It takes the channel data as props and renders the table of videos.
 import React, { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';

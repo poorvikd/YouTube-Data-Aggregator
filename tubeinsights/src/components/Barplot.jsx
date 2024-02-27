@@ -1,8 +1,12 @@
+// Desc: This file contains the Barplot component which is used to render the Barplot in the application.
+// It uses the recharts library to render the barplot.
+// It is used in the ChannelBody component to render the barplot of the channel data.
+// It takes the plotData, XAxisDataKey and YAxisDataKey as props and renders the barplot.
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label } from 'recharts';
 
 
-export default function Barplot(props){
+export default function Barplot(props) {
     return (
         <BarChart
             width={400}
@@ -25,6 +29,6 @@ export default function Barplot(props){
             <Bar dataKey={props.YAxisDataKey} fill="#c20101" />
 
         </BarChart>
-        
+
     );
 };

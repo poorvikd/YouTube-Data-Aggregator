@@ -1,3 +1,8 @@
+// Author: Poorvik Dharmendra
+// Last Modified: 26th Feb 2024
+// Desc: This file contains the Body component which is the main component for the application. It contains the search bar, channel stats, channel body and channel table. It also contains the logic to fetch data from the YouTube API and display it on the UI.
+
+// Importing the required libraries and components
 
 import React, { useState, useEffect } from 'react';
 import { Typography, Container } from '@mui/material'
@@ -13,6 +18,7 @@ import Alert from '@mui/material/Alert';
 
 
 
+// Desc: Function to render the result based on the search status. It returns the channel stats, channel body and channel table if the search is successful. It returns a loading spinner if the search is in progress. It returns an error message if the search is unsuccessful.
 function renderResult(channelData, search, batch, page, pageCount, handlePageChange) {
 
     if (search === 'Loaded') {
@@ -70,6 +76,7 @@ function renderResult(channelData, search, batch, page, pageCount, handlePageCha
     }
 }
 
+// Desc: Main function to render the body of the application. It contains the search bar, channel stats, channel body and channel table. It also contains the logic to fetch data from the YouTube API and display it on the UI.
 function Body() {
 
     const [search, setSearch] = useState('Not Loaded');
@@ -79,12 +86,14 @@ function Body() {
     const [channels, setChannels] = useState('');
     const [channelData, setChannelData] = useState({});
 
+    // Desc: Function to handle the page change event and update the page state.
     const handlePageChange = async (event, value) => {
         await setSearch('Loading');
         const newPage = value;
         await setPage(newPage);
     };
 
+    // Desc: Function to fetch the channel data from the YouTube API and store it in the state.
     const loadStats = async () => {
 
         await setSearch('Loading');
@@ -193,7 +202,7 @@ function Body() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [channels, page]);
 
-
+    // Desc: Function to handle the submit event of the search bar.
     const handleSubmit = async (term) => {
 
         await setSearch('Loading');

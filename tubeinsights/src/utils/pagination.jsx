@@ -1,10 +1,12 @@
+// Desc: Pagination component for the table. It takes the page, pageCount, batch and handlePageChange as props and renders the pagination component.
+
 import React, { Component } from 'react';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
 
-class PaginationComponent extends Component{
-    constructor(props){
+class PaginationComponent extends Component {
+    constructor(props) {
         super(props);
         this.state = {
             page: this.props.page,
@@ -12,18 +14,18 @@ class PaginationComponent extends Component{
         }
     }
 
-    render(){
-        if (this.props.batch){
+    render() {
+        if (this.props.batch) {
             return (
                 <Stack spacing={2}>
-                    <Pagination count={this.state.pageCount} page={this.state.page} onChange={this.props.handlePageChange}  />
+                    <Pagination count={this.state.pageCount} page={this.state.page} onChange={this.props.handlePageChange} />
                 </Stack>
             );
-        }else{
+        } else {
             return (
                 <div></div>
             );
-        
+
         }
     }
 }
