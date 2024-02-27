@@ -30,7 +30,7 @@ function renderResult(channelData, search, batch, page, pageCount, handlePageCha
                     subscriberCount={channelData[page - 1].channel.subscriberCount}
                     videoCount={channelData[page - 1].channel.videoCount}
                 />
-                <ChannelBody channelData={channelData[page - 1]} />
+                <ChannelBody plotData={channelData[page - 1].plotData} />
 
                 <ChannelTable channelData={channelData[page - 1]} />
 
@@ -182,8 +182,6 @@ function Body() {
         await setChannelData(channelData);
 
         await setSearch('Loaded');
-
-        console.log(channelData);
 
     }
 
